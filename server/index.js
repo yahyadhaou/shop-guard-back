@@ -4,7 +4,8 @@ const cors = require("cors");
 const database = require("./database");
 const productRoutes = require("./routes/product.routes"); 
 const usersRoutes= require("./routes/users.routes")
-
+const contractRoutes=require('./routes/contract.routes')
+const claimsRoutes =require("./routes/claims.routes")
 const app = express();
 const PORT = 8000;
 
@@ -20,6 +21,10 @@ app.get("/", (req, res) => {
 
 app.use("/api/products", productRoutes);
 app.use("/api/users",usersRoutes)
+app.use("/api/contract",contractRoutes)
+app.use("/api/claims",claimsRoutes)
+
+
 // Start the server
 const server = app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);

@@ -7,6 +7,7 @@ let getdataProduct = (req, res) => {
       else res.send(result);
     });
   };
+  
   let getdataProductbyid= (req,res)=>{
     const id = req.params.id;
     data.query('SELECT * FROM products WHERE id = ?', [id], (err, results) => {
