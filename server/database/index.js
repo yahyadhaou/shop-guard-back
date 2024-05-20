@@ -1,5 +1,4 @@
 var mysql = require("mysql2");
-const PoolManager  = require("mysql-connection-pool-manager")
 
 var connection = mysql.createPool({
     connectionLimit: 100,
