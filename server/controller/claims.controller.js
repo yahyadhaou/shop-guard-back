@@ -8,46 +8,79 @@ let getdataClaims = (req, res) => {
     });
   };
   let getdataClaimsbyid= (req,res)=>{
-    const id = req.params.id;
-    data.query('SELECT * FROM claims WHERE id = ?', [id], (err, results) => {
+    const {id,insuranceid} = req.params
+    data.query('SELECT * FROM claims WHERE id = ? And insuranceid = ? ', [id,insuranceid], (err, results) => {
         if (err) throw err;
         res.send(results[0]);
       });
     };
+    const getdataClaimsbyinsuranceid = (req, res) => {
+        const { insuranceid } = req.params;
+        const query = `
+            SELECT 
+                claims.*, 
+                users.phone, 
+                users.email, 
+                users.username 
+            FROM 
+                claims 
+            INNER JOIN 
+                users 
+            ON 
+                claims.usersid = users.id 
+            WHERE 
+                claims.insuranceid = ?`;
+    
+        data.query(query, [insuranceid], (err, results) => {
+            if (err) throw err;
+            if (results.length === 0) {
+                res.status(404).send("No data found for the provided insuranceid.");
+                return;
+            }
+            res.send(results);
+        });
+    };
+    
+    
     let insertClaimsdata = (req, res) => {
         let {
-            name,
-            model,
-            category,
-            price,
-            color,
-            image,
-            size,
-            brand
+            titleofclaim,
+            stolen,
+            description,
+            attachment,
+            status,
+            usersid,
+            insuranceid,
+            contractid,
         } = req.body;
-    
+        
+        const Date_ofthe_claim = new Date()
         const sql = `INSERT INTO claims (
-            name,
-            model,
-            category,
-            price,
-            color,
-            image,
-            size,
-            brand
-        ) VALUES (?,?,?,?,?,?,?,?)`;
+            titleofclaim,
+            stolen,
+            description,
+            attachment,
+            status,
+            usersid,
+            insuranceid,
+            contractid,
+            Date_ofthe_claim,
+            workshop
+        ) VALUES (?,?,?,?,?,?,?,?,?,?)`;
     
         data.query(
             sql,
             [
-                name,
-                model,
-                category,
-                price,
-                color,
-                image,
-                size,
-                brand
+                titleofclaim,
+                stolen,
+                description,
+                attachment,
+                status,
+                usersid,
+                insuranceid,
+                contractid,
+                Date_ofthe_claim,
+                "no"
             ],
             (err, result) => {
                 if (err) {
@@ -59,6 +92,7 @@ let getdataClaims = (req, res) => {
             }
         );
     };
+    
 
     const deleteClaims = (req, res) => {
         const id = req.params.id;
@@ -74,10 +108,78 @@ let getdataClaims = (req, res) => {
             }
         });
     };
-  
+    const updateClaims = (req, res) => {
+        const id = req.params.id;
+        const {
+            status
+        } = req.body;
+    
+        let sql = `UPDATE claims SET `;
+        const updates = [];
+        const params = [];
+    
+        if (status) {
+            updates.push(`status = ?`);
+            params.push(status);
+    
+            if (status === 'Repair') {
+                updates.push(`workshop = 'yes'`);
+            } else {
+                updates.push(`workshop = no`); 
+            }
+        }
+    
+        sql += updates.join(', ') + ` WHERE id = ?`;
+        params.push(id);
+    
+        data.query(
+            sql,
+            params,
+            (err, result) => {
+                if (err) {
+                    console.error(err);
+                    res.status(500).send('Internal Server Error');
+                } else {
+                    res.status(200).send('Claim updated successfully');
+                }
+            }
+        );
+    };
+    
+    const getdataWorkshop = (req, res) => {
+        const { insuranceid } = req.params;
+        const query = `
+        SELECT 
+            claims.*, 
+            contract.brand, 
+            contract.type, 
+            contract.model 
+        FROM 
+            claims 
+        INNER JOIN 
+            contract 
+        ON 
+            claims.contractid = contract.id 
+        WHERE 
+            claims.insuranceid = ? AND workshop = 'yes' `;
+        
+        data.query(query, [insuranceid], (err, results) => {
+            if (err) throw err;
+            if (results.length === 0) {
+                res.status(404).send("No data found for the provided insuranceid.");
+                return;
+            }
+            res.send(results);
+        });
+    };    
+
   module.exports ={
+    updateClaims,
     getdataClaims,
     getdataClaimsbyid,
     insertClaimsdata,
-    deleteClaims
+    updateClaims,
+    deleteClaims,
+    getdataWorkshop,
+    getdataClaimsbyinsuranceid
   }

@@ -9,7 +9,45 @@ let getdatacontract = (req,res) => {
 };
 
 let insertcontractcontractdata = (req, res) => {
-    let {
+  let {
+    type,
+    priority,
+    protection,
+    contract_terms,
+    first_name,
+    last_name,
+    email,
+    cin,
+    start_date,
+    end_date,
+    brand,
+    serial,
+    model,
+    usersid, 
+    insuranceid
+  } = req.body;
+
+  const sql = `INSERT INTO contract (
+    type,
+    priority,
+    protection,
+    contract_terms,
+    first_name,
+    last_name,
+    email,
+    cin,
+    start_date,
+    end_date,
+    brand,
+    serial,
+    model,
+    usersid,
+    insuranceid
+  ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
+
+  data.query(
+    sql,
+    [
       type,
       priority,
       protection,
@@ -22,52 +60,28 @@ let insertcontractcontractdata = (req, res) => {
       end_date,
       brand,
       serial,
-      model
-    } = req.body;
-  
-    const sql = `INSERT INTO contract (
-      type,
-      priority,
-      protection,
-      contract_terms,
-      first_name,
-      last_name,
-      email,
-      cin,
-      start_date,
-      end_date,
-      brand,
-      serial,
-      model
-    ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`;
-  
-    data.query(
-      sql,
-      [
-        type,
-        priority,
-        protection,
-        contract_terms,
-        first_name,
-        last_name,
-        email,
-        cin,
-        start_date,
-        end_date,
-        brand,
-        serial,
-        model
-      ],
-      (err, result) => {
-        if (err) {
-          console.error(err);
-          res.status(500).send('Internal Server Error');
-        } else {
-          res.status(200).send(result);
-        }
+      model,
+      usersid,
+      insuranceid
+    ],
+    (err, result) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send('Internal Server Error');
+      } else {
+        res.status(200).send(result);
       }
-    );
+    }
+  );
+};
+let getdatacontractssbyusersid= (req,res)=>{
+  const usersid = req.params.id;
+  data.query('SELECT * FROM contract WHERE usersid = ?', [usersid], (err, results) => {
+      if (err) throw err;
+      res.send(results);
+    });
   };
+
   
 
 const deletecontract = (req, res) => {
@@ -145,5 +159,6 @@ module.exports = {
   getdatacontract,
   insertcontractcontractdata,
   deletecontract,
-  updatecontract
+  updatecontract,
+  getdatacontractssbyusersid
 };

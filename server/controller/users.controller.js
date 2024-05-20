@@ -28,7 +28,8 @@ const register = async (req, res) => {
         (err, result) => {
          if (err) console.log(err);
          else 
-         res.status(201).json({ message: "user registered successfully" });
+         {res.status(201).json({ message: "user registered successfully" });
+        console.log(result)}
         }
       );
   
@@ -55,7 +56,7 @@ const login = async (req, res) => {
           const passwordMatch = await bcrypt.compare(password, user.password);
           if (passwordMatch) {
               const token = jwt.sign({ userId: user.id }, 'secret_key', { expiresIn: '4h' });
-              res.status(200).json({ message: "Login successful", token, id: user.idusers });
+              res.status(200).json({ message: "Login successful", token, id: user.id });
              
           } else {
             res.status(401).json({ message: "Email or password is incorrect" });
@@ -68,8 +69,17 @@ const login = async (req, res) => {
     }
   };
 
+  let getdatauserssbyid= (req,res)=>{
+    const id = req.params.id;
+    data.query('SELECT * FROM users WHERE id = ?', [id], (err, results) => {
+        if (err) throw err;
+        res.send(results[0]);
+      });
+    };
+
 
   module.exports = {
     register,
     login,
+    getdatauserssbyid
   };
