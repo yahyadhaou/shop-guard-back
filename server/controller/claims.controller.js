@@ -55,7 +55,6 @@ let getdataClaims = (req, res) => {
             stolen,
             description,
             attachment,
-            status,
             usersid,
             insuranceid,
             contractid,
@@ -82,7 +81,7 @@ let getdataClaims = (req, res) => {
                 stolen,
                 description,
                 attachment,
-                status,
+                "Unprocessed",
                 usersid,
                 insuranceid,
                 contractid,
@@ -131,7 +130,10 @@ let getdataClaims = (req, res) => {
     
             if (status === 'Repair') {
                 updates.push(`workshop = 'yes'`);
-            } else {
+            } else if (status === 'Refund') {
+                updates.push(`workshop = no`); 
+            }
+            else if (status === 'Reject') {
                 updates.push(`workshop = no`); 
             }
         }
