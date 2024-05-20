@@ -8,8 +8,8 @@ let getdataClaims = (req, res) => {
     });
   };
   let getdataClaimsusersbyid= (req,res)=>{
-    const {id,usersid} = req.params
-    data.query('SELECT * FROM claims WHERE id = ? And usersid = ? ', [id,usersid], (err, results) => {
+    const {contractid,usersid} = req.params
+    data.query('SELECT * FROM claims WHERE contractid = ? And usersid = ? ', [contractid,usersid], (err, results) => {
         if (err) throw err;
         res.send(results[0]);
       });
@@ -156,8 +156,8 @@ let getdataClaims = (req, res) => {
     };
     const updateStatus = (req, res) => {
         const id = req.params.id;
+        const { status } = req.body;  
     
-        const status = 'Repair';
         const workshop = 'no';
     
         const sql = `UPDATE claims SET status = ?, workshop = ? WHERE id = ?`;
@@ -172,6 +172,7 @@ let getdataClaims = (req, res) => {
             }
         });
     };
+    
     
     
     const getdataWorkshop = (req, res) => {
