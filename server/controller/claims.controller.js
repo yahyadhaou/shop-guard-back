@@ -7,6 +7,13 @@ let getdataClaims = (req, res) => {
       else res.send(result);
     });
   };
+  let getdataClaimsusersbyid= (req,res)=>{
+    const {id,usersid} = req.params
+    data.query('SELECT * FROM claims WHERE id = ? And usersid = ? ', [id,usersid], (err, results) => {
+        if (err) throw err;
+        res.send(results[0]);
+      });
+    };
   let getdataClaimsbyid= (req,res)=>{
     const {id,insuranceid} = req.params
     data.query('SELECT * FROM claims WHERE id = ? And insuranceid = ? ', [id,insuranceid], (err, results) => {
@@ -145,6 +152,25 @@ let getdataClaims = (req, res) => {
             }
         );
     };
+    const updateStatus = (req, res) => {
+        const id = req.params.id;
+    
+        const status = 'Repair';
+        const workshop = 'no';
+    
+        const sql = `UPDATE claims SET status = ?, workshop = ? WHERE id = ?`;
+        const params = [status, workshop, id];
+    
+        data.query(sql, params, (err, result) => {
+            if (err) {
+                console.error(err);
+                res.status(500).send('Internal Server Error');
+            } else {
+                res.status(200).send('Claim updated successfully');
+            }
+        });
+    };
+    
     
     const getdataWorkshop = (req, res) => {
         const { insuranceid } = req.params;
@@ -175,10 +201,12 @@ let getdataClaims = (req, res) => {
 
   module.exports ={
     updateClaims,
+    getdataClaimsusersbyid,
     getdataClaims,
     getdataClaimsbyid,
     insertClaimsdata,
     updateClaims,
+    updateStatus,
     deleteClaims,
     getdataWorkshop,
     getdataClaimsbyinsuranceid
